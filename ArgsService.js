@@ -6,13 +6,18 @@ function argsService() {
     let input
     let output
 
-    getValue('-c')
-    if ((getValue('-c'))) {
+    if ((getValue('-c' ))) {
+
         config = getValue('-c')
+
         if ((getValue('-i'))) {
+
             input = getValue('-i')
+
         } else input = 'console'
+
         if ((getValue('-o'))) {
+
             output = getValue('-o')
         } else output = 'console'
     } else {
@@ -21,6 +26,7 @@ function argsService() {
     }
 
     let model = new CipherModel(input, output, config)
+
     return model
 
 }
@@ -28,6 +34,10 @@ function argsService() {
 
 function getValue(flag) {
     const flagIndex = process.argv.indexOf(flag);
+    if (process.argv.filter(item => item === flag).length > 1)    {
+        console.error("Error: Parameter "+"#" + flag +"#" + " is duplicated")
+        process.exit(1)
+    }
     return flagIndex !== -1 ? process.argv[flagIndex + 1] : null;
 }
 

@@ -45,13 +45,18 @@ function chip(CipherModel) {
 
     if (CipherModel.input === 'console') {
         streams.push(process.stdin.setEncoding('utf8'))
-    } else {
+    }
+    else
+        {
         fs.access(CipherModel.input, function (error) {
             if (error) {
                 console.log(error.message);
                 streams.push(process.stderr)
-            }  else streams.push(fs.createReadStream(CipherModel.input, 'utf8'))
+            }
+            console.log("pushRite")
+            streams.push(fs.createReadStream(CipherModel.input, 'utf8'))
         })
+
 
     }
     if (CipherModel.output === 'console') {
@@ -61,10 +66,11 @@ function chip(CipherModel) {
             if (error) {
                 console.log(error.message);
                 streams.push(process.stderr)
-            } else {
-                streams.push(fs.createWriteStream(CipherModel.output, 'utf8'))
             }
+            console.log("pushWrite")
+            streams.push(fs.createWriteStream(CipherModel.output, 'utf8'))
         })
+
 
     }
 
@@ -95,7 +101,7 @@ function chip(CipherModel) {
             new Error("Wrong config parameter")
         }
     }
-
+console.log(streams.toLocaleString())
     stream.pipeline(
         ...streams,
         (err) => {
