@@ -40,23 +40,36 @@ class Atbash extends stream.Transform {
 }
 
 function chip(CipherModel) {
-    let readStream
-    let writeStream
+
+    let streams = []
 
     if (CipherModel.input === 'console') {
-        readStream = process.stdin.setEncoding('utf8')
+        streams.push(process.stdin.setEncoding('utf8'))
     } else {
-        readStream = fs.createReadStream(CipherModel.input, 'utf8')
+        fs.access(CipherModel.input, function (error) {
+            if (error) {
+                console.log(error.message);
+                streams.push(process.stderr)
+            }  else streams.push(fs.createReadStream(CipherModel.input, 'utf8'))
+        })
+
     }
     if (CipherModel.output === 'console') {
-        writeStream = process.stdout
+        streams.push(process.stdout)
     } else {
-        writeStream = fs.createWriteStream(CipherModel.output, 'utf8')
+        fs.access(CipherModel.output, function (error) {
+            if (error) {
+                console.log(error.message);
+                streams.push(process.stderr)
+            } else {
+                streams.push(fs.createWriteStream(CipherModel.output, 'utf8'))
+            }
+        })
+
     }
 
-
     let args = CipherModel.config.split('-')
-    let streams = []
+
 
     for (let arg of args) {
         if (arg[0] === 'C') {
@@ -84,9 +97,7 @@ function chip(CipherModel) {
     }
 
     stream.pipeline(
-        readStream,
         ...streams,
-        writeStream,
         (err) => {
             if (err) {
                 console.error(err)
