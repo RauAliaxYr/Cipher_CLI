@@ -57,64 +57,88 @@ class Atbash extends stream.Transform {
     }
 }
 
-function chip(CipherModel) {
+function cipher(CipherModel) {
 
-    let streams = []
 
-    let writeStream
-    let readStream
+    let streams = addStreamsByConfig(CipherModel)
+
+    let writeStream = createWriteStream(CipherModel)
+    let readStream = createReadStream(CipherModel)
+
+    createPipeline(readStream,writeStream,streams)
+
+}
+
+function createReadStream(CipherModel) {
 
     if (CipherModel.input === 'console') {
-        readStream = process.stdin
+        return process.stdin
     } else {
         fs.access(CipherModel.input, function (error) {
             if (error) {
-                console.log(error.message);
+                process.stderr.write(error.message);
                 process.exit(1)
             }
         })
-        readStream = fs.createReadStream(CipherModel.input, 'utf8')
+        return fs.createReadStream(CipherModel.input, 'utf8')
     }
+}
+
+function createWriteStream(CipherModel) {
     if (CipherModel.output === 'console') {
-        writeStream = process.stdout
+        return  process.stdout
     } else {
         fs.access(CipherModel.output, function (error) {
             if (error) {
-                console.log(error.message);
+                process.stderr.write(error.message);
                 process.exit(1)
             }
-
         })
-        writeStream = fs.createWriteStream(CipherModel.output, 'utf8')
+        return  fs.createWriteStream(CipherModel.output, 'utf8')
     }
+}
 
+function addStreamsByConfig(CipherModel) {
+    let streams =[]
     let args = CipherModel.config.split('-')
 
+console.log(args)
     for (let arg of args) {
         if (arg[0] === 'C') {
 
             if (arg[1] === '1') {
                 streams.push(new Caesar(1).setEncoding('utf8'))
             }
-            if (arg[1] === '0') {
+            else if (arg[1] === '0') {
                 streams.push(new Caesar(-1).setEncoding('utf8'))
+            } else {
+                process.stderr.write("Wrong config parameter for " + arg[0] + " #" + arg[1] + "# ")
+                process.exit(1)
             }
-        }
-        if (arg[0] === 'R') {
+        } else if (arg[0] === 'R') {
             if (arg[1] === '1') {
                 streams.push(new ROT_8(8).setEncoding('utf8'))
             }
-            if (arg[1] === '0') {
+            else if (arg[1] === '0') {
                 streams.push(new ROT_8(-8).setEncoding('utf8'))
+            } else {
+                process.stderr.write("Wrong config parameter for " + arg[0] + " #" + arg[1] + "# ")
+                process.exit(1)
             }
-        }
-        if (arg[0] === 'A') {
+
+
+        } else if (arg[0] === 'A') {
             streams.push(new Atbash().setEncoding('utf8'))
         } else {
-            new Error("Wrong config parameter")
+            process.stderr.write("Wrong config parameter " + arg[0])
+            process.exit(1)
         }
-    }
 
+    }
+    return streams
+}
+
+function createPipeline(readStream, writeStream, streams) {
     stream.pipeline(
         readStream,
         ...streams,
@@ -128,5 +152,6 @@ function chip(CipherModel) {
     )
 }
 
-export {chip}
+
+export {cipher}
 
