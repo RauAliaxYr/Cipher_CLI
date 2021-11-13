@@ -61,7 +61,6 @@ function cipher(CipherModel) {
 
 
     let streams = addStreamsByConfig(CipherModel)
-
     let writeStream = createWriteStream(CipherModel)
     let readStream = createReadStream(CipherModel)
 
@@ -72,28 +71,16 @@ function cipher(CipherModel) {
 function createReadStream(CipherModel) {
 
     if (CipherModel.input === 'console') {
-        return process.stdin
+        return process.stdin.setEncoding('utf8')
     } else {
-        fs.access(CipherModel.input, function (error) {
-            if (error) {
-                process.stderr.write(error.message);
-                process.exit(1)
-            }
-        })
         return fs.createReadStream(CipherModel.input, 'utf8')
     }
 }
 
 function createWriteStream(CipherModel) {
     if (CipherModel.output === 'console') {
-        return  process.stdout
+        return process.stdout
     } else {
-        fs.access(CipherModel.output, function (error) {
-            if (error) {
-                process.stderr.write(error.message);
-                process.exit(1)
-            }
-        })
         return  fs.createWriteStream(CipherModel.output, 'utf8')
     }
 }
@@ -102,7 +89,6 @@ function addStreamsByConfig(CipherModel) {
     let streams =[]
     let args = CipherModel.config.split('-')
 
-console.log(args)
     for (let arg of args) {
         if (arg[0] === 'C') {
 
@@ -128,6 +114,10 @@ console.log(args)
 
 
         } else if (arg[0] === 'A') {
+            if (arg[1]){
+                process.stderr.write("Wrong config parameter " + arg[0] + " parameter must not have a second parameter")
+                process.exit(1)
+            }
             streams.push(new Atbash().setEncoding('utf8'))
         } else {
             process.stderr.write("Wrong config parameter " + arg[0])
@@ -145,7 +135,7 @@ function createPipeline(readStream, writeStream, streams) {
         writeStream,
         (err) => {
             if (err) {
-                console.error(err)
+                process.stderr.write(err)
                 process.exit(1)
             }
         }

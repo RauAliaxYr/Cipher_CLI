@@ -1,4 +1,5 @@
 import {CipherModel} from "./model.js";
+import fs from "fs";
 
 function argsService() {
 
@@ -11,12 +12,24 @@ function argsService() {
         config = getValue('-c')
 
         if ((getValue('-i'))) {
+            fs.access(getValue('-i'), function (error) {
+                if (error) {
+                    process.stderr.write(error.message);
+                    process.exit(1)
+                }
+            })
 
             input = getValue('-i')
 
         } else input = 'console'
 
         if ((getValue('-o'))) {
+            fs.access(getValue('-o'), function (error) {
+                if (error) {
+                    process.stderr.write(error.message);
+                    process.exit(1)
+                }
+            })
 
             output = getValue('-o')
         } else output = 'console'
@@ -24,6 +37,8 @@ function argsService() {
         console.error("ERROR: Please check u config!\n(example: -c (--config) [pattern])")
         process.exit(1)
     }
+
+
 
     let model = new CipherModel(input, output, config)
 
