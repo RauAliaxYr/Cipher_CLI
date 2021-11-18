@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index"
+    "start": "node index",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -17,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/RauAliaxYr/Cipher_CLI/issues"
   },
-  "homepage": "https://github.com/RauAliaxYr/Cipher_CLI#readme"
+  "homepage": "https://github.com/RauAliaxYr/Cipher_CLI#readme",
+  "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@jest/globals": "^27.3.1",
+    "jest": "^27.3.1"
+  }
 }
