@@ -12,10 +12,7 @@ describe("tests by task", () => {
         fs.writeFileSync('./input.txt', "This is secret. Message about \"_\" symbol!")
         fs.writeFileSync("./output.txt", "")
     })
-    afterEach(() => {
-        fs.unlinkSync('./input.txt')
-        fs.unlinkSync("./output.txt")
-    })
+
 
     test("first test", () => {
         child_process.execSync("node index -c \"C1-C1-R0-A\" -i \"./input.txt\" -o \"./output.txt", options)

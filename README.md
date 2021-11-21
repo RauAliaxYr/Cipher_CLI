@@ -33,3 +33,18 @@ node index -c "C1-C0-A-R1-R0-A-R0-R0-C1-A" -i "./input.txt" -o "./output.txt"
 > output.txt
 > `Vhgw gw wkmxkv. Ckwwoik onauv "_" wqcnad!`
 ```
+
+For testing
+
+First of all u need
+```bash
+> npm install
+```
+Start tests
+```bash
+> npm test
+```
+Test coverage
+```bash
+> jest --coverage
+```
